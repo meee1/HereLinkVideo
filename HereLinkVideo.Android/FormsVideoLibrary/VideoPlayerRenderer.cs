@@ -91,6 +91,7 @@ namespace FormsVideoLibrary.Droid
 
         protected override void OnDraw(Canvas canvas)
         {
+            Console.WriteLine("OnDraw " + DateTime.Now.Millisecond);
             if (rtspCancel == null)
             {
                 rtspClientStart();
@@ -507,7 +508,8 @@ namespace FormsVideoLibrary.Droid
         // Event handlers to implement methods
         void OnPlayRequested(object sender, EventArgs args)
         {
-          //  videoView.Start();
+            //videoView.Start();
+            this.Invalidate();
         }
 
         void OnPauseRequested(object sender, EventArgs args)

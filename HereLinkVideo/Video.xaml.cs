@@ -10,6 +10,12 @@ namespace HereLinkVideo
         public Video()
         {
             InitializeComponent();
+
+            Device.StartTimer(TimeSpan.FromMilliseconds(100), () =>
+            {
+                Device.BeginInvokeOnMainThread(() => { videoPlayer.Play(); });
+                return true;
+            });
         }
     }
 }

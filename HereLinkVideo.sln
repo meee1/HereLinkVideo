@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30608.117
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HereLinkVideo.Android", "HereLinkVideo.Android\HereLinkVideo.Android.csproj", "{90248D8E-88C9-4957-960B-1FAE3B1804C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HereLinkVideo", "HereLinkVideo\HereLinkVideo.csproj", "{985FB4F3-DC90-404F-B98E-206B9CCBD60A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{90248D8E-88C9-4957-960B-1FAE3B1804C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90248D8E-88C9-4957-960B-1FAE3B1804C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90248D8E-88C9-4957-960B-1FAE3B1804C4}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{90248D8E-88C9-4957-960B-1FAE3B1804C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90248D8E-88C9-4957-960B-1FAE3B1804C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90248D8E-88C9-4957-960B-1FAE3B1804C4}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{985FB4F3-DC90-404F-B98E-206B9CCBD60A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{985FB4F3-DC90-404F-B98E-206B9CCBD60A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{985FB4F3-DC90-404F-B98E-206B9CCBD60A}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{985FB4F3-DC90-404F-B98E-206B9CCBD60A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{985FB4F3-DC90-404F-B98E-206B9CCBD60A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{985FB4F3-DC90-404F-B98E-206B9CCBD60A}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1262C3DC-7A26-49A7-B085-1D620AEB6C8D}
+	EndGlobalSection
+EndGlobal

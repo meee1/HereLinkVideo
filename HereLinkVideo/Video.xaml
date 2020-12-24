@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:HereLinkVideo.Views"
+             xmlns:video="clr-namespace:FormsVideoLibrary"
+             Title="HereLinkVideo"
+             x:Class="HereLinkVideo.Video">
+
+    <!--
+        The overall app visual hierarchy is defined here, along with navigation.
+    
+        https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/shell/
+    -->
+    <ContentPage.Content>
+    <video:VideoPlayer AreTransportControlsEnabled="False" BackgroundColor="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0,0,1,1"  x:Name="videoPlayer" ></video:VideoPlayer>
+        </ContentPage.Content>
+</ContentPage>

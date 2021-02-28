@@ -92,7 +92,7 @@ namespace FormsVideoLibrary.Droid
 
         protected override void OnDraw(Canvas canvas)
         {
-            Console.WriteLine("OnDraw " + DateTime.Now.Millisecond);
+            //Console.WriteLine("OnDraw " + DateTime.Now.Millisecond);
             if (rtspCancel == null)
             {
                 rtspClientStart(Url);
@@ -116,6 +116,8 @@ namespace FormsVideoLibrary.Droid
 
                 codec.Start();
             }
+
+            canvas.DrawText("Video Loading...", 5, 5, new Paint(PaintFlags.LinearText) { Color = Android.Graphics.Color.Red, TextSize = 20 });
 
             base.OnDraw(canvas);
         }

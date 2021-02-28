@@ -12,7 +12,7 @@
         https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/shell/
     -->
     <ContentPage.Content>
-        <StackLayout BackgroundColor="yellow">
+        <StackLayout BackgroundColor="yellow" Orientation="Horizontal">
             <StackLayout BackgroundColor="Red"   HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"                    >
                 <video:VideoPlayer AreTransportControlsEnabled="False" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"   BackgroundColor="Black"  AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0,0,1,1"  x:Name="videoPlayer" ></video:VideoPlayer>
 

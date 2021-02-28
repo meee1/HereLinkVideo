@@ -26,6 +26,14 @@ namespace FormsVideoLibrary
             get { return (bool)GetValue(AreTransportControlsEnabledProperty); }
         }
 
+        public static readonly BindableProperty UrlProperty =
+BindableProperty.Create(nameof(Url), typeof(string), typeof(VideoPlayer), "");
+        public string Url
+        {
+            set { SetValue(UrlProperty, value); }
+            get { return (string)GetValue(UrlProperty); }
+        }
+
         // Source property
         public static readonly BindableProperty SourceProperty =
             BindableProperty.Create(nameof(Source), typeof(VideoSource), typeof(VideoPlayer), null);

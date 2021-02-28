@@ -35,6 +35,7 @@ namespace FormsVideoLibrary.Droid
 {
     public class VideoPlayerRenderer : ViewRenderer<VideoPlayer, ARelativeLayout>
     {
+        public string Url = "";
         SurfaceView videoView;
         private MediaCodec codec;
         private CallBacks callbacks;
@@ -94,7 +95,7 @@ namespace FormsVideoLibrary.Droid
             Console.WriteLine("OnDraw " + DateTime.Now.Millisecond);
             if (rtspCancel == null)
             {
-                rtspClientStart();
+                rtspClientStart(Url);
             }
 
             if (codec == null && (h264 || h265))
@@ -120,11 +121,9 @@ namespace FormsVideoLibrary.Droid
         }
 
 
-        public async void rtspClientStart()
+        public async void rtspClientStart(string url)
         {
             rtspCancel = new CancellationTokenSource();
-
-            var url = "rtsp://192.168.0.10:8554/H264Video";
 
             String now = DateTime.Now.ToString("yyyyMMdd_HHmmss");
             MemoryStream fs_vps = null;   // used to write the video
@@ -364,6 +363,8 @@ namespace FormsVideoLibrary.Droid
             if (Control != null && videoView != null)
             {
                 //videoView.Prepared -= OnVideoViewPrepared;
+                videoView.Dispose();
+                Control.Dispose();
             }
 
             if (Element != null)
@@ -419,6 +420,10 @@ namespace FormsVideoLibrary.Droid
                 {
                   //  videoView.SeekTo((int)Element.Position.TotalMilliseconds);
                 }
+            }
+            else if (args.PropertyName == VideoPlayer.UrlProperty.PropertyName)
+            {
+                Url = Element.Url;
             }
         }
 

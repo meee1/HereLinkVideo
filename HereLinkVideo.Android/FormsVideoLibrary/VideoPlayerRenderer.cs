@@ -394,8 +394,13 @@ namespace FormsVideoLibrary.Droid
 
             rtspCancel = null;
             codec = null;
-
-            base.Dispose(disposing);
+            try
+            {
+                base.Dispose(disposing);
+            }
+            catch
+            {
+            }
         }
 
         void OnVideoViewPrepared(object sender, EventArgs args)

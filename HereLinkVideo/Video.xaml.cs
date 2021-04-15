@@ -22,9 +22,9 @@ namespace HereLinkVideo
             Device.StartTimer(TimeSpan.FromMilliseconds(100), () =>
             {
                 Device.BeginInvokeOnMainThread(() => {
-                    videoPlayer.Url = "rtsp://192.168.42.11:8554/fpv_video";
+                    videoPlayer.Url = "rtsp://192.168.42.10:8554/H264Video";
                     videoPlayer.Play();
-                    videoPlayer2.Url = "rtsp://192.168.42.11:8554/fpv_video1";
+                    videoPlayer2.Url = "rtsp://192.168.42.10:8554/H264Video1";
                     videoPlayer2.Play();
                 });
                 return true;

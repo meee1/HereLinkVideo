@@ -56,6 +56,9 @@ namespace HereLinkVideo
                         var rs = (MAVLink.mavlink_radio_status_t)msg.data;
                         var rssi = rs.rssi;
                         var noise = rs.noise;
+                        Device.BeginInvokeOnMainThread(() => {
+                            label.Text = rssi + " " + noise;
+                        });
                     }
                 }
             });

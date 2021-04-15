@@ -22,9 +22,9 @@ namespace HereLinkVideo
             Device.StartTimer(TimeSpan.FromMilliseconds(100), () =>
             {
                 Device.BeginInvokeOnMainThread(() => {
-                    videoPlayer.Url = "rtsp://192.168.0.10:8554/H264Video";
+                    videoPlayer.Url = "rtsp://192.168.42.11:8554/fpv_video";
                     videoPlayer.Play();
-                    videoPlayer2.Url = "rtsp://192.168.0.10:8554/H264Video1";
+                    videoPlayer2.Url = "rtsp://192.168.42.11:8554/fpv_video1";
                     videoPlayer2.Play();
                 });
                 return true;
@@ -32,17 +32,18 @@ namespace HereLinkVideo
 
             Task.Run(() =>
             {
-                UdpClient client = new UdpClient(14551);
+                UdpClient client = new UdpClient();
+                client.Connect("192.168.42.11", 14552);
                 var stream = new ProxyStream(client);
                 var parser = new MAVLink.MavlinkParse();
                 var data = MavlinkUtil.StructureToByteArray(new MAVLink.mavlink_heartbeat_t());
+                client.Send(data, data.Length);
                 Task.Run(() =>
                 {
                     IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Any, 0);
                     while (true)
                     {
                         var dataudp = client.Receive(ref iPEndPoint);
-                        client.Connect(iPEndPoint);
                         stream.InjectData(dataudp);
                     }
                 });

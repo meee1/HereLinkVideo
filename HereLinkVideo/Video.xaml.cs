@@ -44,13 +44,14 @@ namespace HereLinkVideo
                     while (true)
                     {
                         var dataudp = client.Receive(ref iPEndPoint);
+                        Console.WriteLine("gotudp " + dataudp.Length);
                         stream.InjectData(dataudp);
                     }
                 });
                 while (true)
                 {
                     var msg = parser.ReadPacket(stream);
-                    Console.WriteLine(JsonConvert.SerializeObject(msg.data, Formatting.None));
+                    Console.WriteLine("got packet "+JsonConvert.SerializeObject(msg.data, Formatting.None));
                     if(msg.msgid == (uint)MAVLink.MAVLINK_MSG_ID.RADIO_STATUS)
                     {
                         var rs = (MAVLink.mavlink_radio_status_t)msg.data;

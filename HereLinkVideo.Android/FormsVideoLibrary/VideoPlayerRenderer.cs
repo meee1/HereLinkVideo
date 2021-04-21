@@ -92,12 +92,6 @@ namespace FormsVideoLibrary.Droid
 
         protected override void OnDraw(Canvas canvas)
         {
-            //Console.WriteLine("OnDraw " + DateTime.Now.Millisecond);
-            if (rtspCancel == null)
-            {
-                rtspClientStart(Url);
-            }
-
             if (codec == null && (h264 || h265))
             {
                 codec = MediaCodec.CreateDecoderByType(h265
@@ -280,7 +274,7 @@ namespace FormsVideoLibrary.Droid
                                 }
                                 catch (ObjectDisposedException)
                                 {
-                                    rtspCancel.Cancel();
+                                    rtspCancel?.Cancel();
                                 }
                                 catch
                                 {
@@ -295,7 +289,7 @@ namespace FormsVideoLibrary.Droid
                             }
 
                             // no rtp in .5 sec
-                            if (lastrtp == c.rtp_count && cnt++ > 5)
+                            if (lastrtp == c.rtp_count && cnt++ > 10)
                             {
                                 c.Stop();
                                 rtspCancel = null;
@@ -308,6 +302,7 @@ namespace FormsVideoLibrary.Droid
                         c.Stop();
 
                         rtsprunning = false;
+                        Thread.Sleep(500);
                     }
                     catch (Exception ex)
                     {
@@ -374,7 +369,7 @@ namespace FormsVideoLibrary.Droid
                 Element.UpdateStatus -= OnUpdateStatus;
             }
 
-            rtspCancel.Cancel();
+            rtspCancel?.Cancel();
             Thread.Sleep(100);
             try
             {
@@ -510,6 +505,9 @@ namespace FormsVideoLibrary.Droid
              //   status = videoView.IsPlaying ? VideoStatus.Playing : VideoStatus.Paused;
             }
 
+            if (rtspCancel == null || rtspCancel.IsCancellationRequested)
+                status = VideoStatus.NotReady;
+
             ((IVideoPlayerController)Element).Status = status;
 
             // Set Position property
@@ -520,18 +518,23 @@ namespace FormsVideoLibrary.Droid
         // Event handlers to implement methods
         void OnPlayRequested(object sender, EventArgs args)
         {
-            //videoView.Start();
+            if (rtspCancel == null || rtspCancel.IsCancellationRequested)
+            {
+                rtspClientStart(Url);
+            }
+
             this.Invalidate();
         }
 
         void OnPauseRequested(object sender, EventArgs args)
         {
-           // videoView.Pause();
+
         }
 
         void OnStopRequested(object sender, EventArgs args)
         {
-          //  videoView.StopPlayback();
+            if (rtspCancel != null)
+                rtspCancel.Cancel();
         }
     }
 }

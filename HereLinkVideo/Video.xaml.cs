@@ -23,6 +23,7 @@ namespace HereLinkVideo
             // when running on gcs unit
             string ip = "192.168.0.10";
             bool herelink = false;
+            bool ipset = false;
 
             if (new Ping().Send("192.168.0.11", 2000).Status == IPStatus.Success && new Ping().Send("192.168.0.10", 2000).Status == IPStatus.Success)
             {
@@ -43,27 +44,28 @@ namespace HereLinkVideo
                     }
                     else
                     {
-                        videoPlayer.Url = "rtsp://" + ip + ":8554/fpv_stream";
-                        videoPlayer.Play();
-                        videoPlayer2.Url = "rtsp://" + ip + ":8554/fpv_stream1";
-                        videoPlayer2.Play();
+                        if (ipset)
+                        {
+                            videoPlayer.Url = "rtsp://" + ip + ":8554/fpv_stream";
+                            videoPlayer.Play();
+                            videoPlayer2.Url = "rtsp://" + ip + ":8554/fpv_stream1";
+                            videoPlayer2.Play();
+                        }
                     }
                 });
                 return true;
             });
-            
-            Task.Run(() =>
+
+            ZeroconfResolver.Resolve("_mavlink._udp.local.").Subscribe(host =>
             {
-                Zeroconf.ZeroconfResolver.Resolve("_mavlink._udp.").Subscribe(host =>
+                if (!herelink && !ipset)
                 {
-                    if (!herelink)
-                    {
-                        ip = host.IPAddress;
-                    }
-                });
+                    ip = host.IPAddress;
+                    ipset = true;
+                }
             });
 
-            Task.Run(() =>
+                Task.Run(() =>
             {
                 UdpClient client;
                 // bind`
@@ -73,7 +75,7 @@ namespace HereLinkVideo
                 }
                 else
                 {
-                    while (ip == "192.168.0.10")
+                    while (!ipset)
                         Thread.Sleep(100);
 
                     client = new UdpClient();

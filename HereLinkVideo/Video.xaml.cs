@@ -7,9 +7,11 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using Zeroconf;
 
 namespace HereLinkVideo
 {
@@ -18,24 +20,70 @@ namespace HereLinkVideo
         public Video()
         {
             InitializeComponent();
+            // when running on gcs unit
+            string ip = "192.168.0.10";
+            bool herelink = false;
+
+            if (new Ping().Send("192.168.0.11", 2000).Status == IPStatus.Success && new Ping().Send("192.168.0.10", 2000).Status == IPStatus.Success)
+            {
+                herelink = true;
+                ip = "192.168.0.10";
+            }
 
             Device.StartTimer(TimeSpan.FromMilliseconds(100), () =>
             {
-                Device.BeginInvokeOnMainThread(() => {
-                    videoPlayer.Url = "rtsp://192.168.0.10:8554/H264Video";
-                    videoPlayer.Play();
-                    videoPlayer2.Url = "rtsp://192.168.0.10:8554/H264Video1";
-                    videoPlayer2.Play();
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    if (herelink)
+                    {
+                        videoPlayer.Url = "rtsp://" + ip + ":8554/H264Video";
+                        videoPlayer.Play();
+                        videoPlayer2.Url = "rtsp://" + ip + ":8554/H264Video1";
+                        videoPlayer2.Play();
+                    }
+                    else
+                    {
+                        videoPlayer.Url = "rtsp://" + ip + ":8554/fpv_stream";
+                        videoPlayer.Play();
+                        videoPlayer2.Url = "rtsp://" + ip + ":8554/fpv_stream1";
+                        videoPlayer2.Play();
+                    }
                 });
                 return true;
+            });
+            
+            Task.Run(() =>
+            {
+                Zeroconf.ZeroconfResolver.Resolve("_mavlink._udp.").Subscribe(host =>
+                {
+                    if (!herelink)
+                    {
+                        ip = host.IPAddress;
+                    }
+                });
             });
 
             Task.Run(() =>
             {
-                UdpClient client = new UdpClient(14551);
+                UdpClient client;
+                // bind`
+                if (herelink)
+                {
+                    client = new UdpClient(14551);
+                }
+                else
+                {
+                    while (ip == "192.168.0.10")
+                        Thread.Sleep(100);
+
+                    client = new UdpClient();
+                    client.Connect(ip, 14552);
+                    var data = MavlinkUtil.StructureToByteArray(new MAVLink.mavlink_heartbeat_t());
+                    client.Send(data, data.Length);
+                }
+
                 var stream = new ProxyStream(client);
                 var parser = new MAVLink.MavlinkParse();
-                var data = MavlinkUtil.StructureToByteArray(new MAVLink.mavlink_heartbeat_t());
                 Task.Run(() =>
                 {
                     IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Any, 0);
@@ -56,8 +104,14 @@ namespace HereLinkVideo
                         var rssi = rs.rssi;
                         var noise = rs.noise;
                     }
+
+                    if (msg.msgid == (uint) MAVLink.MAVLINK_MSG_ID.STATUSTEXT)
+                    {
+                        Console.WriteLine(ASCIIEncoding.ASCII.GetString(((MAVLink.mavlink_statustext_t) msg.data).text));
+                    }
                 }
             });
+            
         }
     }
 

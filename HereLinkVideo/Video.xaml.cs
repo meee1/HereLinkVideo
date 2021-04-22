@@ -10,6 +10,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using FormsVideoLibrary;
 using Xamarin.Forms;
 using Zeroconf;
 
@@ -52,6 +53,17 @@ namespace HereLinkVideo
                             videoPlayer2.Play();
                         }
                     }
+
+                    if (videoPlayer.Status == VideoStatus.Playing)
+                        videoPlayer.IsVisible = true;
+                    else
+                        videoPlayer.IsVisible = false;
+                    
+
+                    if (videoPlayer2.Status == VideoStatus.Playing)
+                        videoPlayer2.IsVisible = true;
+                    else
+                        videoPlayer2.IsVisible = false;
                 });
                 return true;
             });

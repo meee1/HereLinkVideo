@@ -255,8 +255,11 @@ namespace FormsVideoLibrary.Droid
                 {
                     try
                     {
-                        if (rtspCancel.Token.IsCancellationRequested)
+                        if (rtspCancel.IsCancellationRequested)
+                        {
+                            rtsprunning = false;
                             return;
+                        }
 
                         c.Connect(url, RTSPClient.RTP_TRANSPORT.UDP);
                         var lastrtp = 0;
@@ -264,6 +267,7 @@ namespace FormsVideoLibrary.Droid
                         while (!c.StreamingFinished())
                         {
                             rtsprunning = true;
+                            
                             Thread.Sleep(500);
 
                             Device.BeginInvokeOnMainThread(() =>
@@ -282,8 +286,9 @@ namespace FormsVideoLibrary.Droid
                             });
 
                             // existing
-                            if (rtspCancel.Token.IsCancellationRequested)
+                            if (rtspCancel.IsCancellationRequested)
                             {
+                                rtsprunning = false;
                                 c.Stop();
                                 return;
                             }
@@ -293,6 +298,7 @@ namespace FormsVideoLibrary.Droid
                             {
                                 c.Stop();
                                 rtspCancel = null;
+                                rtsprunning = false;
                                 return;
                             }
 
@@ -508,6 +514,9 @@ namespace FormsVideoLibrary.Droid
             if (rtspCancel == null || rtspCancel.IsCancellationRequested)
                 status = VideoStatus.NotReady;
 
+            if (rtspCancel != null && !rtspCancel.IsCancellationRequested && rtsprunning)
+                status = VideoStatus.Playing;
+
             ((IVideoPlayerController)Element).Status = status;
 
             // Set Position property
@@ -520,6 +529,7 @@ namespace FormsVideoLibrary.Droid
         {
             if (rtspCancel == null || rtspCancel.IsCancellationRequested)
             {
+                isPrepared = true;
                 rtspClientStart(Url);
             }
 

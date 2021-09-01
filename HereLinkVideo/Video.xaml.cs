@@ -55,15 +55,15 @@ namespace HereLinkVideo
                     }
 
                     if (videoPlayer.Status == VideoStatus.Playing)
-                        videoPlayer.IsVisible = true;
+                        v1.IsVisible = true;
                     else
-                        videoPlayer.IsVisible = false;
+                        v1.IsVisible = false;
                     
 
                     if (videoPlayer2.Status == VideoStatus.Playing)
-                        videoPlayer2.IsVisible = true;
+                        v2.IsVisible = true;
                     else
-                        videoPlayer2.IsVisible = false;
+                        v2.IsVisible = false;
                 });
                 return true;
             });

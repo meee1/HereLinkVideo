@@ -508,13 +508,14 @@ namespace FormsVideoLibrary.Droid
 
             if (isPrepared)
             {
-             //   status = videoView.IsPlaying ? VideoStatus.Playing : VideoStatus.Paused;
+                //status = videoView.IsPlaying ? VideoStatus.Playing : VideoStatus.Paused;
             }
 
             if (rtspCancel == null || rtspCancel.IsCancellationRequested)
                 status = VideoStatus.NotReady;
 
-            if (rtspCancel != null && !rtspCancel.IsCancellationRequested && rtsprunning)
+            // h264 or h265 are set when we get some data. so use it as an indicator
+            if (rtspCancel != null && !rtspCancel.IsCancellationRequested && rtsprunning && (h264 || h265))
                 status = VideoStatus.Playing;
 
             ((IVideoPlayerController)Element).Status = status;

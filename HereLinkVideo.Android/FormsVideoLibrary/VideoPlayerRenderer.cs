@@ -94,6 +94,8 @@ namespace FormsVideoLibrary.Droid
         {
             if (codec == null && (h264 || h265))
             {
+                Toast.MakeText(this.Context, "Loading Codec", ToastLength.Short).Show();
+
                 codec = MediaCodec.CreateDecoderByType(h265
                     ? MediaFormat.MimetypeVideoHevc
                     : MediaFormat.MimetypeVideoAvc);
@@ -119,6 +121,8 @@ namespace FormsVideoLibrary.Droid
 
         public async void rtspClientStart(string url)
         {
+            Toast.MakeText(this.Context, "Start RTSP", ToastLength.Short).Show();
+
             rtspCancel = new CancellationTokenSource();
 
             String now = DateTime.Now.ToString("yyyyMMdd_HHmmss");
@@ -243,7 +247,7 @@ namespace FormsVideoLibrary.Droid
                     }
                     catch (Exception ex)
                     {
-                        Log.Error("MP", ex.ToString());
+                        Log.Error("RTSP", ex.ToString());
                     }
                 }
             };
@@ -261,11 +265,17 @@ namespace FormsVideoLibrary.Droid
                             return;
                         }
 
+                        Log.Info("RTSP", "Connecting " + url);
+                        Device.BeginInvokeOnMainThread(() =>
+                        {
+                            Toast.MakeText(this.Context, "Start RTSP", ToastLength.Short).Show();
+                        });
                         c.Connect(url, RTSPClient.RTP_TRANSPORT.UDP);
                         var lastrtp = 0;
                         int cnt = 0;
                         while (!c.StreamingFinished())
                         {
+                            Log.Info("RTSP", "Running " + url + " rtp_count " + c.rtp_count + " h264 " + h264 + " h265 " + h265);
                             rtsprunning = true;
                             
                             Thread.Sleep(500);
@@ -288,6 +298,7 @@ namespace FormsVideoLibrary.Droid
                             // existing
                             if (rtspCancel.IsCancellationRequested)
                             {
+                                Log.Info("RTSP", "Canceled  " + url + " " + c.rtp_count);
                                 rtsprunning = false;
                                 c.Stop();
                                 return;
@@ -296,6 +307,7 @@ namespace FormsVideoLibrary.Droid
                             // no rtp in .5 sec
                             if (lastrtp == c.rtp_count && cnt++ > 10)
                             {
+                                Log.Info("RTSP", "no rtsp data  " + url + " " + c.rtp_count);
                                 c.Stop();
                                 rtspCancel = null;
                                 rtsprunning = false;
@@ -317,7 +329,6 @@ namespace FormsVideoLibrary.Droid
                 }
             });
         }
-
        
         protected override void OnElementChanged(ElementChangedEventArgs<VideoPlayer> args)
         {
@@ -393,6 +404,7 @@ namespace FormsVideoLibrary.Droid
             {
             }
 
+            isPrepared = false;
             rtspCancel = null;
             codec = null;
             try
@@ -544,6 +556,8 @@ namespace FormsVideoLibrary.Droid
 
         void OnStopRequested(object sender, EventArgs args)
         {
+            isPrepared = false;
+             
             if (rtspCancel != null)
                 rtspCancel.Cancel();
         }

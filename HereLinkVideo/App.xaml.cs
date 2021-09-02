@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Diagnostics;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -17,14 +18,17 @@ namespace HereLinkVideo
 
         protected override void OnStart()
         {
+            Debug.WriteLine("OnStart");
         }
 
         protected override void OnSleep()
         {
+            Debug.WriteLine("OnSleep"); 
         }
 
         protected override void OnResume()
         {
+            Debug.WriteLine("OnResume");
         }
     }
 }

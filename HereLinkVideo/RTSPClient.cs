@@ -604,9 +604,17 @@ namespace Xamarin
 					Stop();
 					return;
 				}
-                    
+
+                if (message.ReturnCode == 404)
+                {
+                    // Not found
+                    Stop();
+                    rtsp_socket_status = RTSP_STATUS.ConnectFailed;
+                    return;
+                }
+
                 // Check if the Reply has an Authenticate header.
-				if (message.ReturnCode == 401 && message.Headers.ContainsKey(RtspHeaderNames.WWWAuthenticate)) {
+                if (message.ReturnCode == 401 && message.Headers.ContainsKey(RtspHeaderNames.WWWAuthenticate)) {
 
                     // Process the WWW-Authenticate header
                     // EG:   Basic realm="AProxy"

@@ -14,11 +14,11 @@
     <ContentPage.Content>
         <StackLayout BackgroundColor="yellow" Orientation="Horizontal" Margin="0" Padding="0" Spacing="0">
             <StackLayout x:Name="v1" BackgroundColor="Red"   HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"   Orientation="Horizontal" Margin="0" Padding="0"                 >
-                <video:VideoPlayer AreTransportControlsEnabled="False" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"   BackgroundColor="Black"  AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0,0,1,1"  x:Name="videoPlayer" ></video:VideoPlayer>
+                <video:VideoPlayer AreTransportControlsEnabled="False" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"   BackgroundColor="Gray"  AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0,0,1,1"  x:Name="videoPlayer" ></video:VideoPlayer>
 
             </StackLayout>
             <StackLayout x:Name="v2" BackgroundColor="Green"  HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"  Orientation="Horizontal" Margin="0" Padding="0" >
-                <video:VideoPlayer AreTransportControlsEnabled="False" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"   BackgroundColor="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0,0,1,1"  x:Name="videoPlayer2" ></video:VideoPlayer>
+                <video:VideoPlayer AreTransportControlsEnabled="False" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"   BackgroundColor="Gray" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0,0,1,1"  x:Name="videoPlayer2" ></video:VideoPlayer>
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>

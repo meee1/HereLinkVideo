@@ -12,87 +12,111 @@ using System.Threading;
 using System.Threading.Tasks;
 using FormsVideoLibrary;
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 using Zeroconf;
 
 namespace HereLinkVideo
 {
     public partial class Video : ContentPage
     {
+        internal bool run;
+
         public Video()
         {
             InitializeComponent();
+        }
+
+        internal void Init()
+        {
             // when running on gcs unit
             string ip = "192.168.0.10";
             bool herelink = false;
             bool ipset = false;
 
-            if (new Ping().Send("192.168.0.11", 2000).Status == IPStatus.Success && new Ping().Send("192.168.0.10", 2000).Status == IPStatus.Success)
+            Device.StartTimer(TimeSpan.FromMilliseconds(3000), () =>
             {
-                herelink = true;
-                ip = "192.168.0.10";
-            }
+                // do a scan
+                if (!ipset && !herelink)
+                {
+                    if (new Ping().Send("192.168.0.11", 2000).Status == IPStatus.Success &&
+                        new Ping().Send("192.168.0.10", 2000).Status == IPStatus.Success)
+                    {
+                        Console.WriteLine("RSTP is a herelink set ip to 192.168.0.10");
+                        herelink = true;
+                        ip = "192.168.0.10";
+                    }
 
-            Device.StartTimer(TimeSpan.FromMilliseconds(100), () =>
-            {
+                    if(!herelink) { 
+                        ZeroconfResolver.Resolve("_mavlink._udp.local.").Subscribe(host =>
+                        {
+                            if (!herelink && !ipset)
+                            {
+                                Console.WriteLine("RSTP  zeroconf set ip to " + host.IPAddress);
+                                ip = host.IPAddress;
+                                ipset = true;
+                            }
+                        });
+
+                        return true;
+                    }
+                }
+
+                // scan has detected something, play it
                 Device.BeginInvokeOnMainThread(() =>
                 {
-                    if (herelink)
-                    {
-                        videoPlayer.Url = "rtsp://" + ip + ":8554/H264Video";
-                        videoPlayer.Play();
-                        videoPlayer2.Url = "rtsp://" + ip + ":8554/H264Video1";
-                        videoPlayer2.Play();
-                    }
-                    else
-                    {
-                        if (ipset)
+                    try { 
+                        if (herelink)
                         {
-                            videoPlayer.Url = "rtsp://" + ip + ":8554/fpv_stream";
+                            videoPlayer.Url = "rtsp://" + ip + ":8554/H264Video";
                             videoPlayer.Play();
-                            videoPlayer2.Url = "rtsp://" + ip + ":8554/fpv_stream1";
+                            videoPlayer2.Url = "rtsp://" + ip + ":8554/H264Video1";
                             videoPlayer2.Play();
                         }
+                        else if (ipset)
+                            {
+                                videoPlayer.Url = "rtsp://" + ip + ":8554/fpv_stream";
+                            videoPlayer.Play();
+                                videoPlayer2.Url = "rtsp://" + ip + ":8554/fpv_stream1";
+                                videoPlayer2.Play();
+                        }
+                        
+
+                        if (videoPlayer.Status == VideoStatus.Playing)
+                            v1.IsVisible = true;
+                        else
+                            v1.IsVisible = false;
+
+
+                        if (videoPlayer2.Status == VideoStatus.Playing)
+                            v2.IsVisible = true;
+                        else
+                            v2.IsVisible = false;
+                    } 
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("RTSP "+ex);
                     }
-
-                    if (videoPlayer.Status == VideoStatus.Playing)
-                        v1.IsVisible = true;
-                    else
-                        v1.IsVisible = false;
-                    
-
-                    if (videoPlayer2.Status == VideoStatus.Playing)
-                        v2.IsVisible = true;
-                    else
-                        v2.IsVisible = false;
                 });
-                return true;
+                return run;
             });
 
-            ZeroconfResolver.Resolve("_mavlink._udp.local.").Subscribe(host =>
-            {
-                if (!herelink && !ipset)
-                {
-                    ip = host.IPAddress;
-                    ipset = true;
-                }
-            });
 
-                Task.Run(() =>
+            Task.Run(() =>
             {
+                while (!ipset && !herelink)
+                    Thread.Sleep(100);
+
                 UdpClient client;
-                // bind`
+                // bind
                 if (herelink)
                 {
                     client = new UdpClient(14551);
                 }
                 else
                 {
-                    while (!ipset)
-                        Thread.Sleep(100);
-
                     client = new UdpClient();
                     client.Connect(ip, 14552);
-                    var data = MavlinkUtil.StructureToByteArray(new MAVLink.mavlink_heartbeat_t());
+                    var data = new byte[1];
                     client.Send(data, data.Length);
                 }
 
@@ -101,31 +125,45 @@ namespace HereLinkVideo
                 Task.Run(() =>
                 {
                     IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Any, 0);
-                    while (true)
+                    while (run)
                     {
                         var dataudp = client.Receive(ref iPEndPoint);
                         client.Connect(iPEndPoint);
                         stream.InjectData(dataudp);
                     }
+
+                    client?.Close();
                 });
-                while (true)
+                while (run)
                 {
                     var msg = parser.ReadPacket(stream);
-                    Console.WriteLine(JsonConvert.SerializeObject(msg.data, Formatting.None));
-                    if(msg.msgid == (uint)MAVLink.MAVLINK_MSG_ID.RADIO_STATUS)
+                    //Console.WriteLine(JsonConvert.SerializeObject(msg.data, Formatting.None));
+                    if (msg.msgid == (uint)MAVLink.MAVLINK_MSG_ID.RADIO_STATUS)
                     {
                         var rs = (MAVLink.mavlink_radio_status_t)msg.data;
                         var rssi = rs.rssi;
                         var noise = rs.noise;
                     }
 
-                    if (msg.msgid == (uint) MAVLink.MAVLINK_MSG_ID.STATUSTEXT)
+                    if (msg.msgid == (uint)MAVLink.MAVLINK_MSG_ID.STATUSTEXT)
                     {
-                        Console.WriteLine(ASCIIEncoding.ASCII.GetString(((MAVLink.mavlink_statustext_t) msg.data).text));
+                        Console.WriteLine(ASCIIEncoding.ASCII.GetString(((MAVLink.mavlink_statustext_t)msg.data).text));
                     }
                 }
             });
-            
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            run = true;
+            Init();
+        }
+
+        protected override void OnDisappearing()
+        {
+            run = false;
+            base.OnDisappearing();
         }
     }
 

@@ -299,13 +299,22 @@ namespace FormsVideoLibrary.Droid
                             }
 
                             // no rtp in .5 sec
-                            if (lastrtp == c.rtp_count && cnt++ > 10)
+                            if (lastrtp == c.rtp_count)
                             {
-                                Log.Info("RTSP", "no rtsp data  " + url + " " + c.rtp_count);
-                                c.Stop();
-                                rtspCancel = null;
-                                rtsprunning = false;
-                                return;
+                                cnt++;
+                                // no rtp in .5 sec
+                                if (cnt > 10)
+                                {
+                                    Log.Info("RTSP", "no rtsp data  " + url + " " + c.rtp_count);
+                                    c.Stop();
+                                    rtspCancel = null;
+                                    rtsprunning = false;
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                cnt = 0;
                             }
 
                             lastrtp = c.rtp_count;

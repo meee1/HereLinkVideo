@@ -22,6 +22,8 @@ namespace HereLinkVideo.Droid
 
             base.OnCreate(savedInstanceState);
 
+            Video.DeviceID = Xamarin.Droid.SysProp.GetProp("ro.boot.serialno");
+
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             LoadApplication(new App());

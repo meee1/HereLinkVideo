@@ -121,8 +121,6 @@ namespace FormsVideoLibrary.Droid
 
         public async void rtspClientStart(string url)
         {
-            Toast.MakeText(this.Context, "Start RTSP", ToastLength.Short).Show();
-
             rtspCancel = new CancellationTokenSource();
 
             String now = DateTime.Now.ToString("yyyyMMdd_HHmmss");
@@ -266,10 +264,6 @@ namespace FormsVideoLibrary.Droid
                         }
 
                         Log.Info("RTSP", "Connecting " + url);
-                        Device.BeginInvokeOnMainThread(() =>
-                        {
-                            Toast.MakeText(this.Context, "Start RTSP", ToastLength.Short).Show();
-                        });
                         c.Connect(url, RTSPClient.RTP_TRANSPORT.UDP);
                         var lastrtp = 0;
                         int cnt = 0;

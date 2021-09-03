@@ -21,6 +21,8 @@ namespace HereLinkVideo
     {
         internal bool run;
 
+        public static string DeviceID = "";
+
         public Video()
         {
             InitializeComponent();
@@ -49,6 +51,12 @@ namespace HereLinkVideo
                     if(!herelink) { 
                         ZeroconfResolver.Resolve("_mavlink._udp.local.").Subscribe(host =>
                         {
+                            if (DeviceID != "" && host.DisplayName.Contains(DeviceID))
+                            { 
+                                Console.WriteLine("RTSP Detected self - ignoreing");
+                                return;
+                            }
+
                             if (!herelink && !ipset)
                             {
                                 Console.WriteLine("RSTP  zeroconf set ip to " + host.IPAddress);
